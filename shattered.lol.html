@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>shattered.lol</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+
+        :root {
+            --bg-color: #0d0d0d;
+            --text-color: #f0f0f0;
+            --orb-color: rgba(255, 255, 255, 0.2);
+            --orb-glow: rgba(255, 255, 255, 0.4);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden;
+            line-height: 1.6;
+        }
+
+        .orb-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .orb {
+            position: absolute;
+            background: var(--orb-color);
+            border-radius: 50%;
+            animation: float 20s linear infinite, glow 3s ease-in-out infinite alternate;
+        }
+
+        .orb:nth-child(1) {
+            width: 150px;
+            height: 150px;
+            left: 10%;
+            top: 20%;
+            animation-delay: 0s;
+        }
+        .orb:nth-child(2) {
+            width: 80px;
+            height: 80px;
+            left: 40%;
+            top: 50%;
+            animation-delay: 4s;
+            animation-duration: 25s;
+        }
+        .orb:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            left: 70%;
+            top: 30%;
+            animation-delay: 8s;
+            animation-duration: 18s;
+        }
+        .orb:nth-child(4) {
+            width: 60px;
+            height: 60px;
+            left: 25%;
+            top: 80%;
+            animation-delay: 12s;
+        }
+        .orb:nth-child(5) {
+            width: 120px;
+            height: 120px;
+            left: 85%;
+            top: 70%;
+            animation-delay: 16s;
+            animation-duration: 22s;
+        }
+        .orb:nth-child(6) {
+            width: 70px;
+            height: 70px;
+            left: 55%;
+            top: 10%;
+            animation-delay: 2s;
+            animation-duration: 30s;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+            50% { transform: translateY(-300px) rotate(180deg); opacity: 0.5; }
+            100% { transform: translateY(0) rotate(360deg); opacity: 0.8; }
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 10px var(--orb-glow), 0 0 20px var(--orb-glow); }
+            to { box-shadow: 0 0 20px var(--orb-glow), 0 0 40px var(--orb-glow); }
+        }
+        
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        .hero-content {
+            position: relative;
+            max-width: 800px;
+            padding: 4rem 3rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            transform: scale(1);
+            transition: transform 0.3s ease-in-out;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero-content:hover {
+            transform: scale(1.02);
+        }
+
+        .hero-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 30px;
+            padding: 2px;
+            background: conic-gradient(from 180deg at 50% 50%, #fff 0deg, #aaa 90deg, #fff 180deg, #aaa 270deg, #fff 360deg);
+            -webkit-mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            z-index: -1;
+            animation: shake 5s ease-in-out infinite;
+        }
+
+        .logo {
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff, #aaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: title-glow 2s ease-in-out infinite alternate;
+        }
+
+        .tagline {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes title-glow {
+            from { filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2)); }
+            to { filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.4)); }
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+            25% {
+                transform: translate(-1px, 1px);
+            }
+            50% {
+                transform: translate(1px, -1px);
+            }
+            75% {
+                transform: translate(-1px, -1px);
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .hero-content {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="orb-background">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+    
+    <main class="hero">
+        <div class="hero-content">
+            <h1 class="logo">shattered.lol</h1>
+            <p class="tagline">If you want to get your own bio hosted DM me on discord @gorillaclimable.cs you have to be good friends with me or semi-known.</p>
+        </div>
+    </main>
+</body>
+</html>
