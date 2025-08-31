@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HyperOnRopes | shattered.lol</title>
+    <title>HyperOnRopes | VR Creator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -66,7 +66,7 @@
             100% { opacity: 1; }
         }
         @keyframes glitch-text {
-            0% { transform: skew(0); text-shadow: 0 0 10px #9CA3AF; }
+            0% { transform: skew(0); text-shadow: 2px 0 #E5E7EB, -2px 0 #9CA3AF; }
             2% { transform: skew(-0.5deg); text-shadow: 2px 0 #E5E7EB, -2px 0 #9CA3AF; }
             4% { transform: skew(0.5deg); text-shadow: -2px 0 #E5E7EB, 2px 0 #9CA3AF; }
             6% { transform: skew(0); text-shadow: 0 0 10px #9CA3AF; }
@@ -133,10 +133,24 @@
         }
         .right-col {
             display: flex;
+            flex-direction: column;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            flex: 0.6;
+        }
+        .badges-container {
+            display: flex;
             flex-wrap: wrap;
             gap: 15px;
             justify-content: center;
-            flex: 0.6;
+            max-width: 120px;
+        }
+        .link-icons-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
         }
         .link-icon {
             width: 50px;
@@ -199,6 +213,11 @@
             .username {
                 font-size: 1.5rem;
             }
+            .right-col {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -220,15 +239,22 @@
             <div class="bio" id="bio-text"></div>
         </div>
         <div class="right-col">
-            <div class="link-icon" data-tooltip="Roblox">
-                <a href="https://roblox.com/users/1035129149/profile" target="_blank">
-                    <img src="https://img.icons8.com/?size=50&id=t74K9p3z5k0M&format=png" alt="Roblox">
-                </a>
+            <div class="badges-container">
+                <div class="link-icon" data-tooltip="Owner">
+                    <img src="owner.png" alt="Owner Badge">
+                </div>
             </div>
-            <div class="link-icon" data-tooltip="Discord">
-                <a href="https://discord.com/invite/yRtqauzWbH" target="_blank">
-                    <img src="https://img.icons8.com/?size=50&id=30888&format=png" alt="Discord">
-                </a>
+            <div class="link-icons-container">
+                <div class="link-icon" data-tooltip="Roblox">
+                    <a href="https://roblox.com/users/1035129149/profile" target="_blank">
+                        <img src="roblox.png" alt="Roblox">
+                    </a>
+                </div>
+                <div class="link-icon" data-tooltip="Discord">
+                    <a href="https://discord.com/invite/yRtqauzWbH" target="_blank">
+                        <img src="https://img.icons8.com/?size=50&id=30888&format=png" alt="Discord">
+                    </a>
+                </div>
             </div>
         </div>
     </div>
