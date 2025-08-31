@@ -28,15 +28,15 @@
             position: relative;
             background: #0D0F12;
             color: #E5E7EB;
-            cursor: url('hyper.cur'), auto;
+            cursor: url('cursor.png'), auto; /* The 'cursor.png' file must be in the same directory */
         }
         
         .video-bg {
             position: fixed;
             top: 0;
             left: 0;
-            min-width: 100%;
-            min-height: 100%;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
             z-index: -3;
             filter: brightness(0.5) blur(2px);
@@ -198,7 +198,7 @@
 </head>
 <body>
     <video class="video-bg" autoplay muted loop>
-        <source src="background.mp4" type="video/mp4">
+        <source src="background.mp4" type="video/mp4"> <!-- The 'background.mp4' file must be in the same directory -->
     </video>
 
     <div id="click-to-enter" class="click-to-enter">
@@ -209,7 +209,7 @@
 
     <div id="container" class="opacity-0 scale-90">
         <div class="left-col">
-            <img class="pfp" src="image_f4c19a.png" alt="Profile Picture">
+            <img class="pfp" src="profilepicture.gif" alt="Profile Picture"> <!-- The 'profilepicture.gif' file must be in the same directory -->
             <div class="username">HyperOnRopes</div>
             <div class="bio" id="bio-text"></div>
         </div>
@@ -284,7 +284,7 @@
                 c.height = window.innerHeight;
             }
             window.addEventListener('resize', sizeCanvas);
-            sizeCanvas();
+            sizeCanvas(); // Initial call to set size
 
             class Dot {
                 constructor() {
@@ -322,6 +322,7 @@
             }
 
             function noise() {
+                if (c.width === 0 || c.height === 0) return; // Failsafe check
                 const img = ctx.getImageData(0, 0, c.width, c.height);
                 for (let i = 0; i < img.data.length; i += 4 * 500) {
                     const s = Math.random() * 255;
@@ -334,6 +335,10 @@
             }
 
             function animate() {
+                if (c.width === 0 || c.height === 0) {
+                    requestAnimationFrame(animate);
+                    return;
+                }
                 // Draw a semi-transparent black rectangle to create trails
                 ctx.fillStyle = 'rgba(13, 15, 18, 0.1)';
                 ctx.fillRect(0, 0, c.width, c.height);
@@ -344,11 +349,3 @@
                 }
                 noise();
                 requestAnimationFrame(animate);
-            }
-
-            spawnDots();
-            animate();
-        });
-    </script>
-</body>
-</html>
