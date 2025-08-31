@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ryzen | shattered.lol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Share Tech Mono', monospace;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: #0D0F12;
+            color: #E5E7EB;
+            cursor: url('cursor.png'), auto;
+        }
+        
+        .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -3;
+            filter: brightness(0.5) blur(2px);
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .click-to-enter {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: #d61818;
+            z-index: 3;
+            cursor: url('cursor.png'), auto;
+            animation: fadeIn 1s ease forwards, glitch-text 3s infinite;
+            transition: opacity 0.7s ease-in-out;
+            text-shadow: 0 0 10px #d61818;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        @keyframes glitch-text {
+            0% { transform: skew(0); text-shadow: 2px 0 #E5E7EB, -2px 0 #d61818; }
+            2% { transform: skew(-0.5deg); text-shadow: 2px 0 #E5E7EB, -2px 0 #d61818; }
+            4% { transform: skew(0.5deg); text-shadow: -2px 0 #E5E7EB, 2px 0 #d61818; }
+            6% { transform: skew(0); text-shadow: 0 0 10px #d61818; }
+            100% { transform: skew(0); text-shadow: 0 0 10px #d61818; }
+        }
+        canvas#c {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            pointer-events: none;
+        }
+        #container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 90%;
+            max-width: 550px;
+            padding: 30px;
+            border: 2px solid #d61818;
+            border-radius: 20px;
+            background: rgba(31, 41, 55, 0.6);
+            box-shadow: 
+                0 0 5px #d61818, 
+                0 0 10px #d61818,
+                0 0 20px #d61818,
+                0 0 30px #d61818;
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.7s, transform 0.7s;
+        }
+        .left-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            flex: 1;
+        }
+        .pfp {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid #d61818;
+            object-fit: cover;
+            margin-bottom: 15px;
+            box-shadow: 0 0 15px #d61818;
+        }
+        .username {
+            font-size: 1.8rem;
+            text-shadow: 0 0 5px #E5E7EB;
+            margin-bottom: 8px;
+            color: #E5E7EB;
+        }
+        .bio {
+            font-size: 1rem;
+            color: #D1D5DB;
+            max-width: 200px;
+            text-shadow: 0 0 3px #d61818;
+            min-height: 5rem;
+        }
+        .right-col {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            flex: 0.6;
+        }
+        .badges-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            max-width: 120px;
+        }
+        .link-icons-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+        .link-icon {
+            width: 50px;
+            height: 50px;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .link-icon a {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: url('cursor.png'), auto;
+        }
+        .link-icon:hover {
+            transform: scale(1.15);
+            z-index: 99;
+            box-shadow: 0 0 10px #d61818;
+        }
+        .link-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 0 5px #d61818;
+            filter: brightness(0) invert(1);
+        }
+        .link-icon:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(214, 24, 24, 0.95);
+            padding: 6px 12px;
+            border-radius: 10px;
+            color: #000;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 1;
+            pointer-events: none;
+            animation: tooltipFade 0.5s ease forwards;
+            z-index: 99;
+        }
+        @keyframes tooltipFade {
+            0% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+            100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        @media (max-width: 640px) {
+            #container {
+                flex-direction: column;
+                padding: 20px;
+            }
+            .left-col {
+                margin-bottom: 20px;
+            }
+            .link-icon {
+                width: 45px;
+                height: 45px;
+            }
+            .username {
+                font-size: 1.5rem;
+            }
+            .right-col {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+        .volume-slider {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 4;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            color: #E5E7EB;
+            font-size: 0.8rem;
+            background: rgba(31, 41, 55, 0.6);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #d61818;
+            opacity: 0;
+            transition: opacity 0.7s ease-in-out;
+        }
+        .volume-slider input[type="range"] {
+            -webkit-appearance: none;
+            width: 150px; /* Increased width */
+            height: 10px; /* Increased height */
+            background: #4B5563;
+            border-radius: 5px;
+            outline: none;
+            transition: background 0.2s ease;
+        }
+        .volume-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px; /* Slightly larger thumb */
+            height: 18px;
+            background: #d61818;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 5px #d61818;
+        }
+        .volume-slider:hover {
+            transform: scale(1.1); /* Scales the whole element up by 10% */
+            transition: transform 0.2s ease-in-out; /* Smooth transition */
+            box-shadow: 0 0 10px #d61818; /* Adds a glow on hover */
+        }
+    </style>
+</head>
+<body>
+    <video class="video-bg" autoplay muted loop>
+        <source src="background.mp4" type="video/mp4">
+    </video>
+
+    <audio id="audio-bg" src="audio.mp3" loop></audio>
+    
+    <div class="volume-slider">
+        <label for="volume">Volume</label>
+        <input type="range" id="volume" name="volume" min="0" max="1" step="0.01" value="0.5">
+    </div>
+
+    <div id="click-to-enter" class="click-to-enter">
+        <span class="text-white mb-4">CLICK TO ENTER</span>
+    </div>
+
+    <canvas id="c"></canvas>
+
+    <div id="container" class="opacity-0 scale-90">
+        <div class="left-col">
+            <img class="pfp" src="profilepicture.gif" alt="Profile Picture">
+            <div class="username">Ryzen<div>
+            <div class="bio" id="bio-text"></div>
+        </div>
+        <div class="right-col">
+            <div class="badges-container">
+                <div class="link-icon" data-tooltip="Owner">
+                    <img src="owner.png" alt="Owner Badge">
+                </div>
+            </div>
+            <div class="link-icons-container">
+                <div class="link-icon" data-tooltip="Roblox">
+                    <a href="https://www.roblox.com/users/8995560817/profile" target="_blank">
+                        <img src="roblox.png" alt="Roblox">
+                    </a>
+                </div>
+                <div class="link-icon" data-tooltip="Discord">
+                    <a href="https://discord.gg/6NVWCWHDXm" target="_blank">
+                        <img src="https://img.icons8.com/?size=50&id=30888&format=png" alt="Discord">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('container');
+            const enterBtn = document.getElementById('click-to-enter');
+            const vid = document.querySelector('.video-bg');
+            const audio = document.getElementById('audio-bg');
+            const volumeSlider = document.getElementById('volume');
+            const bioText = document.getElementById('bio-text');
+            const bioContent = ["I'm Ryzen and i make stuff.", "real."];
+            let bioIndex = 0;
+            let charIndex = 0;
+            let typing = false;
+
+            // Set initial volume
+            audio.volume = volumeSlider.value;
+
+            function typeBio() {
+                if (!typing) return;
+                const currentText = bioContent[bioIndex];
+                if (charIndex < currentText.length) {
+                    bioText.textContent += currentText.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeBio, 50);
+                } else {
+                    typing = false;
+                    setTimeout(() => {
+                        bioText.textContent = '';
+                        charIndex = 0;
+                        bioIndex = (bioIndex + 1) % bioContent.length;
+                        typing = true;
+                        typeBio();
+                    }, 3000);
+                }
+            }
+
+            enterBtn.addEventListener('click', () => {
+                enterBtn.style.opacity = '0';
+                setTimeout(() => {
+                    enterBtn.style.display = 'none';
+                }, 700);
+
+                // Start playing the video
+                vid.play().catch(e => console.error("Video failed to play:", e));
+                vid.volume = 0.15;
+                vid.style.opacity = '1';
+
+                // Play the audio
+                audio.play().catch(e => console.error("Audio failed to play:", e));
+                
+                // Show the main container and volume slider
+                container.style.opacity = '1';
+                container.style.transform = 'scale(1)';
+                volumeSlider.parentElement.style.opacity = '1';
+
+                typing = true;
+                typeBio();
+            });
+
+            // Add event listener for the volume slider
+            volumeSlider.addEventListener('input', () => {
+                if (audio) {
+                    audio.volume = volumeSlider.value;
+                }
+            });
+
+            const c = document.getElementById('c');
+            const ctx = c.getContext('2d');
+            let parts = [];
+
+            function sizeCanvas() {
+                c.width = window.innerWidth;
+                c.height = window.innerHeight;
+            }
+            window.addEventListener('resize', sizeCanvas);
+            sizeCanvas();
+
+            class Dot {
+                constructor() {
+                    this.reset();
+                }
+                reset() {
+                    this.x = Math.random() * c.width;
+                    this.y = Math.random() * c.height;
+                    this.s = Math.random() * 1 + 0.5;
+                    this.vx = (Math.random() - 0.5) * 0.5;
+                    this.vy = Math.random() * 0.5 + 0.2;
+                    this.alpha = Math.random() * 0.5 + 0.2;
+                }
+                move() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    if (this.y > c.height || this.x < 0 || this.x > c.width) {
+                        this.reset();
+                        this.y = 0;
+                    }
+                }
+                draw() {
+                    ctx.fillStyle = `rgba(214, 24, 24, ${this.alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.s, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            function spawnDots() {
+                parts = [];
+                for (let i = 0; i < 200; i++) {
+                    parts.push(new Dot());
+                }
+            }
+
+            function noise() {
+                if (c.width === 0 || c.height === 0) return;
+                const img = ctx.getImageData(0, 0, c.width, c.height);
+                for (let i = 0; i < img.data.length; i += 4 * 500) {
+                    const s = Math.random() * 255;
+                    img.data[i] = s;
+                    img.data[i + 1] = s;
+                    img.data[i + 2] = s;
+                    img.data[i + 3] = 20;
+                }
+                ctx.putImageData(img, 0, 0);
+            }
+
+            function animate() {
+                if (c.width === 0 || c.height === 0) {
+                    requestAnimationFrame(animate);
+                    return;
+                }
+                // Draw a semi-transparent black rectangle to create trails
+                ctx.fillStyle = 'rgba(13, 15, 18, 0.1)';
+                ctx.fillRect(0, 0, c.width, c.height);
+
+                for (let i = 0; i < parts.length; i++) {
+                    parts[i].move();
+                    parts[i].draw();
+                }
+                noise();
+                requestAnimationFrame(animate);
+            }
+        });
+    </script>
+</body>
+</html>
