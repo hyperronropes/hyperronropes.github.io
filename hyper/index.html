@@ -8,13 +8,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Refined Monochrome -->
-    <!-- Application Structure Plan: This single-file web page features an immersive "Click to Enter" screen that transitions into a user's bio card. The design is built around a cohesive color scheme and layered animations to create a futuristic, terminal-like aesthetic. The card provides key information while a dynamic background adds visual interest. This structure offers a unique, engaging user experience beyond a standard static page. -->
-    <!-- Visualization & Content Choices: 
-        - Report Info: User's identity and bio. Goal: Inform. Presentation: A central, glowing card with a profile picture, username, and a bio that types itself out. Justification: This layout is effective and fits the theme, resembling a digital ID or a data file. Method: HTML/CSS with JavaScript for the typing effect.
-        - Report Info: Animated background. Goal: Engage. Presentation: A full-screen video loop and a canvas-based particle animation. Justification: The combination of a video and a particle system creates a rich, layered background that feels more alive and interactive. Method: Vanilla JavaScript and HTML.
-        - Report Info: Social links. Goal: Connect. Presentation: Icons with interactive tooltips that appear on hover. Justification: This is a clean, space-efficient way to display links without cluttering the main interface, reinforcing the minimalist, tech-driven design. Method: HTML/CSS.
-    -->
     <style>
         body {
             margin: 0;
@@ -219,12 +212,54 @@
                 justify-content: center;
             }
         }
+        .volume-slider {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 4;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            color: #E5E7EB;
+            font-size: 0.8rem;
+            background: rgba(31, 41, 55, 0.6);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #6B7280;
+            opacity: 0;
+            transition: opacity 0.7s ease-in-out;
+        }
+        .volume-slider input[type="range"] {
+            -webkit-appearance: none;
+            width: 100px;
+            height: 8px;
+            background: #4B5563;
+            border-radius: 5px;
+            outline: none;
+            transition: background 0.2s ease;
+        }
+        .volume-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #E5E7EB;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 5px #E5E7EB;
+        }
     </style>
 </head>
 <body>
     <video class="video-bg" autoplay muted loop>
-        <source src="background.mp4" type="video/mp4"> <!-- The 'background.mp4' file must be in the same directory -->
-    </video>
+        <source src="background.mp4" type="video/mp4"> </video>
+
+    <audio id="audio-bg" src="song.mp4" loop></audio>
+    
+    <div class="volume-slider">
+        <label for="volume">Volume</label>
+        <input type="range" id="volume" name="volume" min="0" max="1" step="0.01" value="0.5">
+    </div>
 
     <div id="click-to-enter" class="click-to-enter">
         <span class="text-white mb-4">CLICK TO ENTER</span>
@@ -234,8 +269,7 @@
 
     <div id="container" class="opacity-0 scale-90">
         <div class="left-col">
-            <img class="pfp" src="profilepicture.gif" alt="Profile Picture"> <!-- The 'profilepicture.gif' file must be in the same directory -->
-            <div class="username">HyperOnRopes</div>
+            <img class="pfp" src="profilepicture.gif" alt="Profile Picture"> <div class="username">HyperOnRopes</div>
             <div class="bio" id="bio-text"></div>
         </div>
         <div class="right-col">
@@ -264,11 +298,16 @@
             const container = document.getElementById('container');
             const enterBtn = document.getElementById('click-to-enter');
             const vid = document.querySelector('.video-bg');
+            const audio = document.getElementById('audio-bg');
+            const volumeSlider = document.getElementById('volume');
             const bioText = document.getElementById('bio-text');
             const bioContent = ["I'm Hyper, and I live for Gorilla Tag.", "Making custom maps, mods, and metadatas."];
             let bioIndex = 0;
             let charIndex = 0;
             let typing = false; // Start typing after entering
+
+            // Set initial volume
+            audio.volume = volumeSlider.value;
 
             function typeBio() {
                 if (!typing) return;
@@ -299,12 +338,24 @@
                 vid.play().catch(e => console.error("Video failed to play:", e));
                 vid.volume = 0.15;
                 vid.style.opacity = '1';
+
+                // Play the audio and set its volume
+                audio.play().catch(e => console.error("Audio failed to play:", e));
                 
+                // Show the main container and volume slider
                 container.style.opacity = '1';
                 container.style.transform = 'scale(1)';
+                volumeSlider.parentElement.style.opacity = '1';
 
                 typing = true;
                 typeBio();
+            });
+
+            // Add event listener for the volume slider
+            volumeSlider.addEventListener('input', () => {
+                if (audio) {
+                    audio.volume = volumeSlider.value;
+                }
             });
 
             const c = document.getElementById('c');
