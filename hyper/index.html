@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HyperOnRopes | shattered.lol</title>
+    <title>HyperOnRopes | VR Creator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -257,9 +257,10 @@
 </head>
 <body>
     <video class="video-bg" autoplay muted loop>
-        <source src="background.mp4" type="video/mp4"> </video>
+        <source src="background.mp4" type="video/mp4">
+    </video>
 
-    <audio id="audio-bg" src="song.mp4" loop></audio>
+    <audio id="audio-bg" src="audio.mp3" loop></audio>
     
     <div class="volume-slider">
         <label for="volume">Volume</label>
@@ -274,7 +275,8 @@
 
     <div id="container" class="opacity-0 scale-90">
         <div class="left-col">
-            <img class="pfp" src="profilepicture.gif" alt="Profile Picture"> <div class="username">HyperOnRopes</div>
+            <img class="pfp" src="profilepicture.gif" alt="Profile Picture">
+            <div class="username">HyperOnRopes</div>
             <div class="bio" id="bio-text"></div>
         </div>
         <div class="right-col">
@@ -309,7 +311,7 @@
             const bioContent = ["I'm Hyper, and I live for Gorilla Tag.", "Making custom maps, mods, and metadatas."];
             let bioIndex = 0;
             let charIndex = 0;
-            let typing = false; // Start typing after entering
+            let typing = false;
 
             // Set initial volume
             audio.volume = volumeSlider.value;
@@ -339,12 +341,12 @@
                     enterBtn.style.display = 'none';
                 }, 700);
 
-                // Start playing the video, but don't require it for the rest of the page to load
+                // Start playing the video
                 vid.play().catch(e => console.error("Video failed to play:", e));
                 vid.volume = 0.15;
                 vid.style.opacity = '1';
 
-                // Play the audio and set its volume
+                // Play the audio
                 audio.play().catch(e => console.error("Audio failed to play:", e));
                 
                 // Show the main container and volume slider
@@ -372,7 +374,7 @@
                 c.height = window.innerHeight;
             }
             window.addEventListener('resize', sizeCanvas);
-            sizeCanvas(); // Initial call to set size
+            sizeCanvas();
 
             class Dot {
                 constructor() {
@@ -410,7 +412,7 @@
             }
 
             function noise() {
-                if (c.width === 0 || c.height === 0) return; // Failsafe check
+                if (c.width === 0 || c.height === 0) return;
                 const img = ctx.getImageData(0, 0, c.width, c.height);
                 for (let i = 0; i < img.data.length; i += 4 * 500) {
                     const s = Math.random() * 255;
