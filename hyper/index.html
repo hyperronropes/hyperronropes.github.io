@@ -1,1 +1,354 @@
-g
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HyperOnRopes | VR Creator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Refined Monochrome -->
+    <!-- Application Structure Plan: This single-file web page features an immersive "Click to Enter" screen that transitions into a user's bio card. The design is built around a cohesive color scheme and layered animations to create a futuristic, terminal-like aesthetic. The card provides key information while a dynamic background adds visual interest. This structure offers a unique, engaging user experience beyond a standard static page. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: User's identity and bio. Goal: Inform. Presentation: A central, glowing card with a profile picture, username, and a bio that types itself out. Justification: This layout is effective and fits the theme, resembling a digital ID or a data file. Method: HTML/CSS with JavaScript for the typing effect.
+        - Report Info: Animated background. Goal: Engage. Presentation: A full-screen video loop and a canvas-based particle animation. Justification: The combination of a video and a particle system creates a rich, layered background that feels more alive and interactive. Method: Vanilla JavaScript and HTML.
+        - Report Info: Social links. Goal: Connect. Presentation: Icons with interactive tooltips that appear on hover. Justification: This is a clean, space-efficient way to display links without cluttering the main interface, reinforcing the minimalist, tech-driven design. Method: HTML/CSS.
+    -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Share Tech Mono', monospace;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: #0D0F12;
+            color: #E5E7EB;
+            cursor: url('https://r2.guns.lol/d26f6336-d8f9-4d2b-b9d1-039c9413241b.cur'), auto;
+        }
+        
+        .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            min-width: 100%;
+            min-height: 100%;
+            object-fit: cover;
+            z-index: -3;
+            filter: brightness(0.5) blur(2px);
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .click-to-enter {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: #9CA3AF;
+            z-index: 3;
+            cursor: pointer;
+            animation: fadeIn 1s ease forwards, glitch-text 3s infinite;
+            transition: opacity 0.7s ease-in-out;
+            text-shadow: 0 0 10px #9CA3AF;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        @keyframes glitch-text {
+            0% { transform: skew(0); text-shadow: 0 0 10px #9CA3AF; }
+            2% { transform: skew(-0.5deg); text-shadow: 2px 0 #E5E7EB, -2px 0 #9CA3AF; }
+            4% { transform: skew(0.5deg); text-shadow: -2px 0 #E5E7EB, 2px 0 #9CA3AF; }
+            6% { transform: skew(0); text-shadow: 0 0 10px #9CA3AF; }
+            100% { transform: skew(0); text-shadow: 0 0 10px #9CA3AF; }
+        }
+        canvas#c {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            pointer-events: none;
+        }
+        #container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 90%;
+            max-width: 550px;
+            padding: 30px;
+            border: 2px solid #6B7280;
+            border-radius: 20px;
+            background: rgba(31, 41, 55, 0.6);
+            box-shadow: 
+                0 0 5px #9CA3AF, 
+                0 0 10px #9CA3AF,
+                0 0 20px #9CA3AF,
+                0 0 30px #9CA3AF;
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.7s, transform 0.7s;
+        }
+        .left-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            flex: 1;
+        }
+        .pfp {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid #E5E7EB;
+            object-fit: cover;
+            margin-bottom: 15px;
+            box-shadow: 0 0 15px #E5E7EB;
+        }
+        .username {
+            font-size: 1.8rem;
+            text-shadow: 0 0 5px #E5E7EB;
+            margin-bottom: 8px;
+            color: #E5E7EB;
+        }
+        .bio {
+            font-size: 1rem;
+            color: #D1D5DB;
+            max-width: 200px;
+            text-shadow: 0 0 3px #9CA3AF;
+            min-height: 5rem;
+        }
+        .right-col {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            flex: 0.6;
+        }
+        .link-icon {
+            width: 50px;
+            height: 50px;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .link-icon:hover {
+            transform: scale(1.15);
+            z-index: 99;
+            box-shadow: 0 0 10px #9CA3AF;
+        }
+        .link-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 0 5px #9CA3AF;
+            filter: brightness(0) invert(1);
+        }
+        .link-icon:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(156, 163, 175, 0.95);
+            padding: 6px 12px;
+            border-radius: 10px;
+            color: #000;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 1;
+            pointer-events: none;
+            animation: tooltipFade 0.5s ease forwards;
+            z-index: 99;
+        }
+        @keyframes tooltipFade {
+            0% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+            100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        @media (max-width: 640px) {
+            #container {
+                flex-direction: column;
+                padding: 20px;
+            }
+            .left-col {
+                margin-bottom: 20px;
+            }
+            .link-icon {
+                width: 45px;
+                height: 45px;
+            }
+            .username {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <video class="video-bg" autoplay muted loop>
+        <source src="https://r2.guns.lol/d2f741d4-8d45-420a-8d76-e1376840d235.mp4" type="video/mp4">
+    </video>
+
+    <div id="click-to-enter" class="click-to-enter">
+        <span class="text-white mb-4">CLICK TO ENTER</span>
+    </div>
+
+    <canvas id="c"></canvas>
+
+    <div id="container" class="opacity-0 scale-90">
+        <div class="left-col">
+            <img class="pfp" src="uploaded:image_f4c19a.png-530e9fdc-af92-468e-93f1-4f1bc239dee6" alt="Profile Picture">
+            <div class="username">HyperOnRopes</div>
+            <div class="bio" id="bio-text"></div>
+        </div>
+        <div class="right-col">
+            <div class="link-icon" data-tooltip="Roblox">
+                <a href="https://roblox.com/users/1035129149/profile" target="_blank">
+                    <img src="https://img.icons8.com/?size=50&id=t74K9p3z5k0M&format=png" alt="Roblox">
+                </a>
+            </div>
+            <div class="link-icon" data-tooltip="Discord">
+                <a href="https://discord.com/invite/yRtqauzWbH" target="_blank">
+                    <img src="https://img.icons8.com/?size=50&id=30888&format=png" alt="Discord">
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('container');
+            const enterBtn = document.getElementById('click-to-enter');
+            const vid = document.querySelector('.video-bg');
+            const bioText = document.getElementById('bio-text');
+            const bioContent = ["I'm Hyper, and I live for Gorilla Tag.", "Making custom maps, mods, and metadatas."];
+            let bioIndex = 0;
+            let charIndex = 0;
+            let typing = false; // Start typing after entering
+
+            function typeBio() {
+                if (!typing) return;
+                const currentText = bioContent[bioIndex];
+                if (charIndex < currentText.length) {
+                    bioText.textContent += currentText.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeBio, 50);
+                } else {
+                    typing = false;
+                    setTimeout(() => {
+                        bioText.textContent = '';
+                        charIndex = 0;
+                        bioIndex = (bioIndex + 1) % bioContent.length;
+                        typing = true;
+                        typeBio();
+                    }, 3000);
+                }
+            }
+
+            enterBtn.addEventListener('click', () => {
+                enterBtn.style.opacity = '0';
+                setTimeout(() => {
+                    enterBtn.style.display = 'none';
+                }, 700);
+
+                // Start playing the video, but don't require it for the rest of the page to load
+                vid.play().catch(e => console.error("Video failed to play:", e));
+                vid.volume = 0.15;
+                vid.style.opacity = '1';
+                
+                container.style.opacity = '1';
+                container.style.transform = 'scale(1)';
+
+                typing = true;
+                typeBio();
+            });
+
+            const c = document.getElementById('c');
+            const ctx = c.getContext('2d');
+            let parts = [];
+
+            function sizeCanvas() {
+                c.width = window.innerWidth;
+                c.height = window.innerHeight;
+            }
+            window.addEventListener('resize', sizeCanvas);
+            sizeCanvas();
+
+            class Dot {
+                constructor() {
+                    this.reset();
+                }
+                reset() {
+                    this.x = Math.random() * c.width;
+                    this.y = Math.random() * c.height;
+                    this.s = Math.random() * 1 + 0.5;
+                    this.vx = (Math.random() - 0.5) * 0.5;
+                    this.vy = Math.random() * 0.5 + 0.2;
+                    this.alpha = Math.random() * 0.5 + 0.2;
+                }
+                move() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    if (this.y > c.height || this.x < 0 || this.x > c.width) {
+                        this.reset();
+                        this.y = 0;
+                    }
+                }
+                draw() {
+                    ctx.fillStyle = `rgba(156, 163, 175, ${this.alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.s, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            function spawnDots() {
+                parts = [];
+                for (let i = 0; i < 200; i++) {
+                    parts.push(new Dot());
+                }
+            }
+
+            function noise() {
+                const img = ctx.getImageData(0, 0, c.width, c.height);
+                for (let i = 0; i < img.data.length; i += 4 * 500) {
+                    const s = Math.random() * 255;
+                    img.data[i] = s;
+                    img.data[i + 1] = s;
+                    img.data[i + 2] = s;
+                    img.data[i + 3] = 20;
+                }
+                ctx.putImageData(img, 0, 0);
+            }
+
+            function animate() {
+                // Draw a semi-transparent black rectangle to create trails
+                ctx.fillStyle = 'rgba(13, 15, 18, 0.1)';
+                ctx.fillRect(0, 0, c.width, c.height);
+
+                for (let i = 0; i < parts.length; i++) {
+                    parts[i].move();
+                    parts[i].draw();
+                }
+                noise();
+                requestAnimationFrame(animate);
+            }
+
+            spawnDots();
+            animate();
+        });
+    </script>
+</body>
+</html>
